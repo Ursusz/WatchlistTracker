@@ -20,7 +20,7 @@
 
       <div class="form-group">
         <label>Rating (1-5)</label>
-        <input type="number" formControlName="rating" min="1" max="10" class="form-control"
+        <input type="number" formControlName="rating" min="1" max="5" class="form-control"
           [class.is-invalid]="submitted && f['rating'].errors" />
         <div *ngIf="submitted && f['rating'].errors" class="error-message">Rating must be between 1 and 5</div>
       </div>
