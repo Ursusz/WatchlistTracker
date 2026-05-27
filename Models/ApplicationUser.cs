@@ -12,4 +12,6 @@ public class ApplicationUser : IdentityUser
     public List<Friendship> SentFriendships { get; set; } = [];
 
     public List<Friendship> ReceivedFriendships { get; set; } = [];
+
+    public List<Watchlist> Watchlist { get; set; } = [];
 }

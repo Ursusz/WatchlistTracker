@@ -348,7 +348,7 @@ namespace Watchlist_Tracker.Migrations
                     b.Property<int>("MovieId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Rating")
+                    b.Property<int>("Rating")
                         .HasColumnType("int");
 
                     b.Property<int>("Visibility")
@@ -364,6 +364,34 @@ namespace Watchlist_Tracker.Migrations
                     b.HasIndex("MovieId");
 
                     b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("Watchlist_Tracker.Models.Watchlist", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateAdded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MovieId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MovieId");
+
+                    b.HasIndex("UserId", "MovieId")
+                        .IsUnique();
+
+                    b.ToTable("Watchlists");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -482,6 +510,25 @@ namespace Watchlist_Tracker.Migrations
                     b.Navigation("Movie");
                 });
 
+            modelBuilder.Entity("Watchlist_Tracker.Models.Watchlist", b =>
+                {
+                    b.HasOne("Watchlist_Tracker.Models.Movie", "Movie")
+                        .WithMany("Watchlist")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Watchlist_Tracker.Models.ApplicationUser", "User")
+                        .WithMany("Watchlist")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Watchlist_Tracker.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Comments");
@@ -491,6 +538,8 @@ namespace Watchlist_Tracker.Migrations
                     b.Navigation("Reviews");
 
                     b.Navigation("SentFriendships");
+
+                    b.Navigation("Watchlist");
                 });
 
             modelBuilder.Entity("Watchlist_Tracker.Models.Category", b =>
@@ -501,6 +550,8 @@ namespace Watchlist_Tracker.Migrations
             modelBuilder.Entity("Watchlist_Tracker.Models.Movie", b =>
                 {
                     b.Navigation("Reviews");
+
+                    b.Navigation("Watchlist");
                 });
 
             modelBuilder.Entity("Watchlist_Tracker.Models.Review", b =>

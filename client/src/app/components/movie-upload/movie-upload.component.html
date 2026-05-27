@@ -1,0 +1,27 @@
+<div class="upload-container">
+  <h3>Upload Movie Image</h3>
+
+  <div class="upload-area">
+    <input 
+      type="file" 
+      #fileInput 
+      (change)="onFileSelected($event)" 
+      accept="image/*"
+      [disabled]="loading">
+    <label>Click to select image or drag & drop</label>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    Uploading...
+  </div>
+
+  <div *ngIf="uploadedImageUrl && !loading" class="preview">
+    <p class="success">Image uploaded successfully!</p>
+    <img [src]="uploadedImageUrl" alt="Uploaded image">
+    <p class="image-url">URL: <code>{{ uploadedImageUrl }}</code></p>
+  </div>
+</div>

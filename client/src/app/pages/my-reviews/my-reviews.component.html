@@ -1,0 +1,31 @@
+<div class="page-container">
+  <app-navbar></app-navbar>
+
+  <div class="page-content">
+    <div class="page-header">
+      <h1>My Reviews</h1>
+      <button class="btn btn-primary" (click)="createReview()">+ Write Review</button>
+    </div>
+
+    <div *ngIf="loading" class="loading">Loading reviews...</div>
+    <div *ngIf="error" class="error-message">{{ error }}</div>
+
+    <div *ngIf="!loading && reviews.length === 0" class="empty-state">
+      <p>You haven't written any reviews yet.</p>
+      <button class="btn btn-primary" (click)="createReview()">Write Your First Review</button>
+    </div>
+
+    <div *ngIf="!loading && reviews.length > 0" class="reviews-list">
+      <div *ngFor="let review of reviews" class="review-wrapper">
+        <app-review-card [review]="review"></app-review-card>
+        <button
+          *ngIf="isOwnReview(review)"
+          class="delete-review-btn"
+          (click)="deleteReview(review.id)"
+        >
+          Delete Review
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

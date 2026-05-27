@@ -1,0 +1,33 @@
+<div class="page-container">
+  <app-navbar></app-navbar>
+
+  <div class="page-content">
+    <div class="page-header">
+      <h1>My Watchlist</h1>
+      <button class="btn btn-secondary" (click)="browseMovies()">Browse Movies</button>
+    </div>
+
+    <div *ngIf="loading" class="loading">Loading watchlist...</div>
+    <div *ngIf="error" class="error-message">{{ error }}</div>
+
+    <div *ngIf="!loading && items.length === 0" class="empty-state">
+      <p>Your watchlist is empty.</p>
+      <button class="btn btn-primary" (click)="browseMovies()">Discover Movies</button>
+    </div>
+
+    <div *ngIf="!loading && items.length > 0" class="movie-grid">
+      <div *ngFor="let item of items" class="movie-card">
+        <img *ngIf="item.movieImage" [src]="item.movieImage" [alt]="item.movieTitle" class="movie-poster" />
+        <div *ngIf="!item.movieImage" class="movie-poster placeholder">🎬</div>
+        <div class="movie-info">
+          <h3>{{ item.movieTitle }}</h3>
+          <small>Added {{ item.dateAdded | date:'mediumDate' }}</small>
+          <div class="card-actions">
+            <button class="btn btn-primary btn-sm" (click)="writeReview(item.movieId)">Review</button>
+            <button class="btn btn-danger btn-sm" (click)="removeFromWatchlist(item.movieId)">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

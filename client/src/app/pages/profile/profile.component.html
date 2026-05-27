@@ -1,0 +1,56 @@
+<div class="profile-container">
+  <app-navbar></app-navbar>
+
+  <button class="back-btn" (click)="goBack()">← Back</button>
+
+  <div *ngIf="loading" class="loading">Loading profile...</div>
+
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <div *ngIf="!loading && userProfile" class="profile-content">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        {{ userProfile.fullName.charAt(0).toUpperCase() }}
+      </div>
+      <div class="profile-info">
+        <h1>{{ userProfile.fullName }}</h1>
+        <p class="email" *ngIf="isOwnProfile">{{ userProfile.email }}</p>
+        <button
+          *ngIf="!isOwnProfile && !friendRequestSent"
+          class="btn btn-primary"
+          (click)="sendFriendRequest()"
+          [disabled]="sendingRequest"
+        >
+          {{ sendingRequest ? 'Sending...' : '👥 Add Friend' }}
+        </button>
+        <span *ngIf="!isOwnProfile && friendRequestSent" class="request-sent">
+          Friend request sent!
+        </span>
+      </div>
+    </div>
+
+    <div class="profile-stats">
+      <div class="stat">
+        <span class="stat-number">{{ userProfile.reviewCount }}</span>
+        <span class="stat-label">Reviews</span>
+      </div>
+      <div class="stat" [class.clickable]="isOwnProfile" (click)="goToWatchlist()">
+        <span class="stat-number">{{ userProfile.watchlistCount }}</span>
+        <span class="stat-label">Watchlist</span>
+      </div>
+    </div>
+
+    <div class="recent-reviews">
+      <h2>Recent Reviews</h2>
+      <div *ngIf="userProfile.recentReviews.length === 0" class="empty">
+        No reviews yet
+      </div>
+      <div *ngIf="userProfile.recentReviews.length > 0" class="reviews-list">
+        <app-review-card
+          *ngFor="let review of userProfile.recentReviews"
+          [review]="review"
+        ></app-review-card>
+      </div>
+    </div>
+  </div>
+</div>

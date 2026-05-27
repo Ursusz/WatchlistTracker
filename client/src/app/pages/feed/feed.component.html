@@ -1,0 +1,39 @@
+<div class="feed-container">
+  <app-navbar></app-navbar>
+
+  <div class="feed-content">
+    <div class="feed-header">
+      <div class="tabs">
+      <button
+        class="tab-button"
+        [class.active]="activeTab === 'global'"
+        (click)="switchTab('global')"
+      >
+        🌍 Global Feed
+      </button>
+      <button
+        class="tab-button"
+        [class.active]="activeTab === 'friends'"
+        (click)="switchTab('friends')"
+      >
+        👥 Friends Only
+      </button>
+      </div>
+      <button class="btn-create" (click)="createReview()">+ Write Review</button>
+    </div>
+
+    <div *ngIf="error" class="error-message">{{ error }}</div>
+    <div *ngIf="loading" class="loading">Loading reviews...</div>
+
+    <div *ngIf="!loading && reviews.length === 0" class="empty-state">
+      <p>No reviews yet. Start following friends or check back later!</p>
+    </div>
+
+    <div *ngIf="!loading && reviews.length > 0" class="reviews-list">
+      <app-review-card
+        *ngFor="let review of reviews"
+        [review]="review"
+      ></app-review-card>
+    </div>
+  </div>
+</div>

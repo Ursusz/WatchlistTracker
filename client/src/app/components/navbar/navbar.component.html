@@ -1,0 +1,49 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-logo" (click)="goToFeed()">
+      <span class="logo-text">🎬 Watchlist Tracker</span>
+    </div>
+
+    <div class="navbar-right">
+      <button
+        class="notification-btn"
+        (click)="toggleNotifications()"
+        [class.has-notifications]="pendingRequestCount > 0"
+      >
+        🔔
+        <span *ngIf="pendingRequestCount > 0" class="notification-badge">
+          {{ pendingRequestCount }}
+        </span>
+      </button>
+
+      <div *ngIf="showNotifications" class="notification-dropdown">
+        <button (click)="goToFriendRequests()" class="notification-item">
+          👥 Friend Requests ({{ pendingRequestCount }})
+        </button>
+      </div>
+
+      <button class="menu-btn" (click)="toggleMenu()">
+        👤 {{ fullName }}
+      </button>
+
+      <div *ngIf="showMenu" class="menu-dropdown">
+        <button (click)="goToProfile()" class="menu-item">
+          📋 My Profile
+        </button>
+        <button class="menu-item" (click)="goToMyReviews()">
+          ⭐ My Reviews
+        </button>
+        <button class="menu-item" (click)="goToWatchlist()">
+          📺 My Watchlist
+        </button>
+        <button class="menu-item" (click)="goToMovies()">
+          🎥 Browse Movies
+        </button>
+        <hr />
+        <button (click)="logout()" class="menu-item logout">
+          🚪 Logout
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

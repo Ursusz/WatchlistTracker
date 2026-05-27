@@ -1,0 +1,53 @@
+<div class="page-container">
+  <app-navbar></app-navbar>
+
+  <div class="page-content">
+    <button class="back-btn" (click)="goBack()">← Back</button>
+    <h1>Write a Review</h1>
+
+    <div *ngIf="loading" class="loading">Loading movies...</div>
+
+    <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="onSubmit()" class="review-form">
+      <div class="form-group">
+        <label>Movie</label>
+        <select formControlName="movieId" class="form-control"
+          [class.is-invalid]="submitted && f['movieId'].errors">
+          <option value="">Select a movie...</option>
+          <option *ngFor="let movie of movies" [value]="movie.id">{{ movie.title }}</option>
+        </select>
+        <div *ngIf="submitted && f['movieId'].errors" class="error-message">Please select a movie</div>
+      </div>
+
+      <div class="form-group">
+        <label>Rating (1-10)</label>
+        <input type="number" formControlName="rating" min="1" max="10" class="form-control"
+          [class.is-invalid]="submitted && f['rating'].errors" />
+        <div *ngIf="submitted && f['rating'].errors" class="error-message">Rating must be between 1 and 10</div>
+      </div>
+
+      <div class="form-group">
+        <label>Review</label>
+        <textarea formControlName="content" rows="5" class="form-control"
+          placeholder="Share your thoughts (min 10 characters)..."
+          [class.is-invalid]="submitted && f['content'].errors"></textarea>
+        <div *ngIf="submitted && f['content'].errors" class="error-message">
+          Review must be at least 10 characters
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Visibility</label>
+        <select formControlName="visibility" class="form-control">
+          <option [value]="0">Public</option>
+          <option [value]="1">Friends Only</option>
+        </select>
+      </div>
+
+      <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+      <button type="submit" class="btn btn-primary" [disabled]="submitting">
+        {{ submitting ? 'Publishing...' : 'Publish Review' }}
+      </button>
+    </form>
+  </div>
+</div>

@@ -15,6 +15,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Friendship> Friendships { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Review> Reviews { get; set; }
+    public DbSet<Watchlist> Watchlists { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -60,6 +61,22 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             .WithMany(u => u.Comments)
             .HasForeignKey(f => f.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Watchlist>()
+            .HasOne(w => w.User)
+            .WithMany(u => u.Watchlist)
+            .HasForeignKey(w => w.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Watchlist>()
+            .HasOne(w => w.Movie)
+            .WithMany(m => m.Watchlist)
+            .HasForeignKey(w => w.MovieId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Watchlist>()
+            .HasIndex(w => new { w.UserId, w.MovieId })
+            .IsUnique();
 
     }
 }

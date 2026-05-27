@@ -20,4 +20,6 @@ public class Movie : BaseEntity
     public string? ImagePath { get; set; }
 
     public List<Review> Reviews { get; set; } = [];
+
+    public List<Watchlist> Watchlist { get; set; } = [];
 }

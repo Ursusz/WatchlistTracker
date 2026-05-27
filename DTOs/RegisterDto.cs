@@ -2,9 +2,17 @@
 
 using System.ComponentModel.DataAnnotations;
 
-public record RegisterDto(
-    [Required, MinLength(3)] string FullName,
-    [Required, EmailAddress] string Email,
-    [Required, MinLength(6)] string Password,
-    [Required, Compare("Password")] string ConfirmPassword
-);
+public class RegisterDto
+{
+    [Required, MinLength(3)]
+    public string FullName { get; set; } = string.Empty;
+
+    [Required, EmailAddress]
+    public string Email { get; set; } = string.Empty;
+
+    [Required, MinLength(6)]
+    public string Password { get; set; } = string.Empty;
+
+    [Required, Compare(nameof(Password))]
+    public string ConfirmPassword { get; set; } = string.Empty;
+}

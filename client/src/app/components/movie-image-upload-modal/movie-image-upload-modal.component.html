@@ -1,0 +1,44 @@
+<div *ngIf="isOpen" class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Upload Image for {{ movieTitle }}</h2>
+      <button class="close-btn" (click)="closeModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="upload-area">
+        <input 
+          type="file" 
+          #fileInput 
+          (change)="onFileSelected($event)" 
+          accept="image/*"
+          [disabled]="loading">
+        <label>Click to select image or drag & drop</label>
+      </div>
+
+      <div *ngIf="preview" class="preview-section">
+        <img [src]="preview" alt="Preview" class="preview-image">
+      </div>
+
+      <div *ngIf="error" class="error-message">
+        {{ error }}
+      </div>
+
+      <div *ngIf="loading" class="loading">
+        Uploading...
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeModal()" [disabled]="loading">
+        Cancel
+      </button>
+      <button 
+        class="btn btn-primary" 
+        (click)="uploadImage()" 
+        [disabled]="!selectedFile || loading">
+        {{ loading ? 'Uploading...' : 'Upload Image' }}
+      </button>
+    </div>
+  </div>
+</div>

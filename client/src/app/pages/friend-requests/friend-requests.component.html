@@ -1,0 +1,36 @@
+<div class="friend-requests-container">
+  <app-navbar></app-navbar>
+
+  <div class="requests-content">
+    <h1>Friend Requests</h1>
+
+    <div *ngIf="loading" class="loading">Loading requests...</div>
+
+    <div *ngIf="!loading && requests.length === 0" class="empty-state">
+      <p>No pending friend requests</p>
+    </div>
+
+    <div *ngIf="!loading && requests.length > 0" class="requests-list">
+      <div *ngFor="let request of requests" class="request-card">
+        <div class="request-info">
+          <div class="avatar">{{ request.requesterName.charAt(0).toUpperCase() }}</div>
+          <h3>{{ request.requesterName }}</h3>
+        </div>
+        <div class="request-actions">
+          <button
+            class="btn btn-accept"
+            (click)="acceptRequest(request.friendshipId)"
+          >
+            ✓ Accept
+          </button>
+          <button
+            class="btn btn-reject"
+            (click)="rejectRequest(request.friendshipId)"
+          >
+            ✕ Reject
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

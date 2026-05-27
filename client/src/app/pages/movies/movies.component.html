@@ -1,0 +1,58 @@
+<div class="page-container">
+  <app-navbar></app-navbar>
+
+  <div class="page-content">
+    <h1>Browse Movies</h1>
+
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Search by title or category..."
+      [(ngModel)]="searchTerm"
+    />
+
+    <div *ngIf="loading" class="loading">Loading movies...</div>
+    <div *ngIf="error" class="error-message">{{ error }}</div>
+
+    <div *ngIf="!loading && filteredMovies.length === 0" class="empty-state">
+      No movies found.
+    </div>
+
+    <div *ngIf="!loading && filteredMovies.length > 0" class="movie-grid">
+      <div *ngFor="let movie of filteredMovies" class="movie-card">
+        <div class="movie-poster-container">
+          <img *ngIf="movie.imagePath" [src]="movie.imagePath" [alt]="movie.title" class="movie-poster" />
+          <div *ngIf="!movie.imagePath" class="movie-poster placeholder">🎬</div>
+          <button class="upload-btn" (click)="openUploadModal(movie)" title="Upload image">📸</button>
+        </div>
+        <div class="movie-info">
+          <h3>{{ movie.title }}</h3>
+          <span class="category" *ngIf="movie.categoryName">{{ movie.categoryName }}</span>
+          <p class="description">{{ movie.description | slice:0:100 }}{{ movie.description.length > 100 ? '...' : '' }}</p>
+          <div class="rating-info" *ngIf="movie.reviewCount > 0">
+            ⭐ {{ movie.averageRating | number:'1.1-1' }} ({{ movie.reviewCount }} reviews)
+          </div>
+          <div class="card-actions">
+            <button
+              class="btn"
+              [class.btn-success]="isInWatchlist(movie.id)"
+              [class.btn-outline]="!isInWatchlist(movie.id)"
+              (click)="toggleWatchlist(movie.id)"
+            >
+              {{ isInWatchlist(movie.id) ? '✓ In Watchlist' : '+ Add to Watchlist' }}
+            </button>
+            <button class="btn btn-primary btn-sm" (click)="writeReview(movie.id)">Review</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-movie-image-upload-modal
+    [isOpen]="uploadModalOpen"
+    [movieId]="selectedMovieForUpload?.id ?? null"
+    [movieTitle]="selectedMovieForUpload?.title ?? ''"
+    (close)="closeUploadModal()"
+    (uploaded)="onImageUploaded($event)"
+  ></app-movie-image-upload-modal>
+</div>
