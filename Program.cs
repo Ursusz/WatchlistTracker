@@ -19,7 +19,7 @@ namespace Watchlist_Tracker
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Configure Serilog
+            // Serilog
             Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Information()
             .Enrich.FromLogContext()
@@ -83,7 +83,7 @@ namespace Watchlist_Tracker
                 };
             });
 
-            // Register Repositories
+            // Register repositories
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<ICommentRepository, CommentRepository>();
@@ -91,13 +91,13 @@ namespace Watchlist_Tracker
             builder.Services.AddScoped<IWatchlistRepository, WatchlistRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-            // Register Services
+            // Register services
             builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped<ICommentService, CommentService>();
             builder.Services.AddScoped<IFriendshipService, FriendshipService>();
             builder.Services.AddScoped<IWatchlistService, WatchlistService>();
 
-            // Add CORS for frontend
+            // CORS for frontend
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend", builder =>
@@ -110,12 +110,12 @@ namespace Watchlist_Tracker
 
             // Add services to the container
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+            
             builder.Services.AddOpenApi();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline
+            // HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
@@ -134,7 +134,6 @@ namespace Watchlist_Tracker
             app.UseCors("AllowFrontend");
 
             app.UseGlobalExceptionHandler();
-            app.UseStaticFiles();
             app.UseStaticFiles();
 
             app.UseAuthentication();
