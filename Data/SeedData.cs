@@ -77,7 +77,7 @@ public static class SeedData
                 "Admin seed skipped because SeedAdmin credentials are not configured. Set SeedAdmin:Email and SeedAdmin:Password (or env vars SeedAdmin__Email and SeedAdmin__Password).");
         }
 
-        // Ensure all existing users can sign in (fixes EmailConfirmed = false)
+        // Ensure all existing users can sign in
         var unconfirmedUsers = await userManager.Users
             .Where(u => !u.EmailConfirmed)
             .ToListAsync();
