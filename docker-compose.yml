@@ -16,7 +16,7 @@ services:
     networks:
       - studlab_net
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '${SQL_SA_PASSWORD}' -Q 'SELECT 1' -b"]
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '${SQL_SA_PASSWORD}' -Q 'SELECT 1' -b -C"]
       interval: 10s
       timeout: 5s
       retries: 5
