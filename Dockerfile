@@ -14,7 +14,9 @@ RUN dotnet publish "Watchlist Tracker.csproj" -c Release -o /app/publish
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
-EXPOSE 5000 5001
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Production
 
 COPY --from=publish /app/publish .
 
