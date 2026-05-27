@@ -1,0 +1,28 @@
+<div class="page-container">
+  <app-navbar></app-navbar>
+
+  <div class="page-content">
+    <div class="page-header">
+      <div>
+        <h1>Movie Reviews</h1>
+        <p class="movie-title" *ngIf="movie">{{ movie.title }}</p>
+      </div>
+      <button class="btn btn-secondary" (click)="backToMovies()">Back to Movies</button>
+    </div>
+
+    <div *ngIf="loading" class="loading">Loading movie reviews...</div>
+    <div *ngIf="error" class="error-message">{{ error }}</div>
+
+    <div *ngIf="!loading && !error && reviews.length === 0" class="empty-state">
+      No reviews for this movie yet.
+    </div>
+
+    <div *ngIf="!loading && !error && reviews.length > 0" class="reviews-list">
+      <app-review-card
+        *ngFor="let review of reviews"
+        [review]="review"
+        (reviewDeleted)="onReviewDeleted($event)"
+      ></app-review-card>
+    </div>
+  </div>
+</div>

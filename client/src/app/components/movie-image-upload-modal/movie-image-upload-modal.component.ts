@@ -14,20 +14,55 @@ export class MovieImageUploadModalComponent {
   @Input() movieTitle: string = '';
   @Input() isOpen = false;
   @Output() close = new EventEmitter<void>();
-  @Output() uploaded = new EventEmitter<string>();
+  @Output() uploaded = new EventEmitter<string | null>();
 
   loading = false;
   error: string | null = null;
   preview: string | null = null;
   selectedFile: File | null = null;
+  isDragOver = false;
 
   constructor(private movieService: MovieService) {}
 
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
+  openFilePicker(fileInput: HTMLInputElement): void {
+    if (this.loading) return;
+    fileInput.click();
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    if (this.loading) return;
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = false;
+    if (this.loading) return;
+
+    const file = event.dataTransfer?.files?.[0];
+    if (!file) return;
+    this.handleSelectedFile(file);
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
+    this.handleSelectedFile(file);
+  }
+
+  private handleSelectedFile(file: File): void {
+    this.selectedFile = null;
+    this.preview = null;
+
+    if (file.type && !file.type.toLowerCase().startsWith('image/')) {
       this.error = 'Please select an image file';
       return;
     }
@@ -49,16 +84,18 @@ export class MovieImageUploadModalComponent {
   }
 
   uploadImage(): void {
-    if (!this.selectedFile || !this.movieId) {
+    if (!this.movieId) {
+      this.error = 'Movie not selected';
+      return;
+    }
+
+    if (!this.selectedFile) {
       this.error = 'Please select an image first';
       return;
     }
 
     this.loading = true;
     this.error = null;
-
-    const formData = new FormData();
-    formData.append('file', this.selectedFile);
 
     this.movieService.uploadImageForMovie(this.movieId, this.selectedFile).subscribe({
       next: (response) => {

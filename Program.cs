@@ -33,6 +33,22 @@ namespace Watchlist_Tracker
             builder.Host.UseSerilog();
             builder.Logging.ClearProviders();
 
+            var jwtKey = builder.Configuration["Jwt:Key"];
+            var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+            var jwtAudience = builder.Configuration["Jwt:Audience"];
+
+            if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
+            {
+                throw new InvalidOperationException(
+                    "JWT configuration is invalid. Set Jwt:Key (or Jwt__Key env var) to a strong secret with at least 32 characters.");
+            }
+
+            if (string.IsNullOrWhiteSpace(jwtIssuer) || string.IsNullOrWhiteSpace(jwtAudience))
+            {
+                throw new InvalidOperationException(
+                    "JWT configuration is incomplete. Set Jwt:Issuer and Jwt:Audience (or Jwt__Issuer and Jwt__Audience env vars).");
+            }
+
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -47,7 +63,6 @@ namespace Watchlist_Tracker
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
 
-            var jwtKey = builder.Configuration["Jwt:Key"]!;
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -61,8 +76,8 @@ namespace Watchlist_Tracker
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    ValidIssuer = jwtIssuer,
+                    ValidAudience = jwtAudience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
                 };
             });

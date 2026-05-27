@@ -3,6 +3,7 @@
 using Watchlist_Tracker.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 public static class SeedData
@@ -12,6 +13,7 @@ public static class SeedData
         var context = serviceProvider.GetRequiredService<AppDbContext>();
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
         var logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("SeedData");
 
         context.Database.Migrate();
@@ -23,48 +25,56 @@ public static class SeedData
                 await roleManager.CreateAsync(new IdentityRole(roleName));
         }
 
-        const string adminEmail = "admin@watchlist.com";
-        const string adminPassword = "ciscopa55";
+        var adminEmail = configuration["SeedAdmin:Email"];
+        var adminPassword = configuration["SeedAdmin:Password"];
 
-        var adminUser = await userManager.FindByEmailAsync(adminEmail);
-        if (adminUser == null)
+        if (!string.IsNullOrWhiteSpace(adminEmail) && !string.IsNullOrWhiteSpace(adminPassword))
         {
-            var admin = new ApplicationUser
+            var adminUser = await userManager.FindByEmailAsync(adminEmail);
+            if (adminUser == null)
             {
-                UserName = adminEmail,
-                Email = adminEmail,
-                FullName = "Administrator",
-                EmailConfirmed = true
-            };
+                var admin = new ApplicationUser
+                {
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    FullName = "Administrator",
+                    EmailConfirmed = true
+                };
 
-            var result = await userManager.CreateAsync(admin, adminPassword);
-            if (!result.Succeeded)
-            {
-                var errors = string.Join("; ", result.Errors.Select(e => e.Description));
-                logger.LogError("Failed to create admin user: {Errors}", errors);
-                throw new InvalidOperationException($"Failed to create admin user: {errors}");
+                var result = await userManager.CreateAsync(admin, adminPassword);
+                if (!result.Succeeded)
+                {
+                    var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                    logger.LogError("Failed to create admin user: {Errors}", errors);
+                    throw new InvalidOperationException($"Failed to create admin user: {errors}");
+                }
+
+                await userManager.AddToRoleAsync(admin, "Admin");
+                logger.LogInformation("Admin user created: {Email}", adminEmail);
             }
+            else
+            {
+                adminUser.EmailConfirmed = true;
+                await userManager.UpdateAsync(adminUser);
 
-            await userManager.AddToRoleAsync(admin, "Admin");
-            logger.LogInformation("Admin user created: {Email}", adminEmail);
+                var resetToken = await userManager.GeneratePasswordResetTokenAsync(adminUser);
+                var resetResult = await userManager.ResetPasswordAsync(adminUser, resetToken, adminPassword);
+                if (!resetResult.Succeeded)
+                {
+                    var errors = string.Join("; ", resetResult.Errors.Select(e => e.Description));
+                    logger.LogError("Failed to reset admin password: {Errors}", errors);
+                }
+
+                if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
+
+                logger.LogInformation("Admin user password synchronized: {Email}", adminEmail);
+            }
         }
         else
         {
-            adminUser.EmailConfirmed = true;
-            await userManager.UpdateAsync(adminUser);
-
-            var resetToken = await userManager.GeneratePasswordResetTokenAsync(adminUser);
-            var resetResult = await userManager.ResetPasswordAsync(adminUser, resetToken, adminPassword);
-            if (!resetResult.Succeeded)
-            {
-                var errors = string.Join("; ", resetResult.Errors.Select(e => e.Description));
-                logger.LogError("Failed to reset admin password: {Errors}", errors);
-            }
-
-            if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
-                await userManager.AddToRoleAsync(adminUser, "Admin");
-
-            logger.LogInformation("Admin user password synchronized: {Email}", adminEmail);
+            logger.LogWarning(
+                "Admin seed skipped because SeedAdmin credentials are not configured. Set SeedAdmin:Email and SeedAdmin:Password (or env vars SeedAdmin__Email and SeedAdmin__Password).");
         }
 
         // Ensure all existing users can sign in (fixes EmailConfirmed = false)

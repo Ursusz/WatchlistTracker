@@ -40,19 +40,8 @@ export class MyReviewsComponent implements OnInit {
     });
   }
 
-  deleteReview(reviewId: number) {
-    if (!confirm('Delete this review?')) return;
-
-    this.reviewService.deleteReview(reviewId).subscribe({
-      next: () => {
-        this.reviews = this.reviews.filter(r => r.id !== reviewId);
-      },
-      error: () => this.error = 'Failed to delete review'
-    });
-  }
-
-  isOwnReview(review: Review): boolean {
-    return review.authorName === this.authService.getFullName();
+  onReviewDeleted(reviewId: number): void {
+    this.reviews = this.reviews.filter(review => review.id !== reviewId);
   }
 
   createReview() {

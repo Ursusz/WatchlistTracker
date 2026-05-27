@@ -14,7 +14,7 @@ public interface IReviewService
     Task<IEnumerable<ReviewDto>> GetFriendsFeedAsync(string userId);
     Task<int> CreateReviewAsync(CreateReviewDto dto, string userId);
     Task UpdateReviewAsync(int id, UpdateReviewDto dto, string userId);
-    Task DeleteReviewAsync(int id, string userId);
+    Task DeleteReviewAsync(int id, string userId, bool isAdmin);
 }
 
 public class ReviewService : IReviewService
@@ -77,11 +77,12 @@ public class ReviewService : IReviewService
         await _reviewRepository.SaveChangesAsync();
     }
 
-    public async Task DeleteReviewAsync(int id, string userId)
+    public async Task DeleteReviewAsync(int id, string userId, bool isAdmin)
     {
         var review = await _reviewRepository.GetByIdAsync(id);
         if (review == null) throw new InvalidOperationException("Review not found");
-        if (review.AuthorId != userId) throw new UnauthorizedAccessException("You can only delete your own reviews");
+        if (!isAdmin && review.AuthorId != userId)
+            throw new UnauthorizedAccessException("You can only delete your own reviews");
 
         _reviewRepository.Remove(review);
         await _reviewRepository.SaveChangesAsync();

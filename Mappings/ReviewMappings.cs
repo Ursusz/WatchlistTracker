@@ -20,6 +20,7 @@ public static class ReviewMappings
 
     public static ReviewDto ToDto(this Review review) => new(
         review.Id,
+        review.AuthorId,
         review.Author?.FullName ?? "Unknown",
         review.Movie?.Title ?? "Unknown",
         review.Rating,

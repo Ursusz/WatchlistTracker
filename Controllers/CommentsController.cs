@@ -53,12 +53,13 @@ public class CommentsController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            await _commentService.DeleteCommentAsync(id, userId);
+            var isAdmin = User.IsInRole("Admin");
+            await _commentService.DeleteCommentAsync(id, userId, isAdmin);
             return NoContent();
         }
         catch (UnauthorizedAccessException)
         {
-            return Forbid("You can only delete your own comments");
+            return Forbid("You can only delete your own comments unless you are an admin");
         }
         catch (InvalidOperationException ex)
         {

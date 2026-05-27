@@ -55,4 +55,8 @@ export class FeedComponent implements OnInit {
   createReview() {
     this.router.navigate(['/create-review']);
   }
+
+  onReviewDeleted(reviewId: number): void {
+    this.reviews = this.reviews.filter(review => review.id !== reviewId);
+  }
 }

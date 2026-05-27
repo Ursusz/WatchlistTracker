@@ -1,7 +1,7 @@
 <div class="review-card">
   <div class="review-header">
     <div class="author-info">
-      <h3 class="author-name">{{ review.authorName }}</h3>
+      <h3 class="author-name" (click)="goToAuthorProfile()">{{ review.authorName }}</h3>
       <p class="movie-title">{{ review.movieTitle }}</p>
     </div>
     <div class="rating">{{ getRating(review.rating) }}</div>
@@ -13,12 +13,22 @@
 
   <div class="review-footer">
     <small class="watched-date">Watched: {{ review.watchedAt | date:'short' }}</small>
-    <button
-      class="comments-btn"
-      (click)="toggleComments()"
-    >
-      💬 {{ review.commentCount }} Comments
-    </button>
+    <div class="footer-actions">
+      <button
+        *ngIf="canDeleteReview()"
+        class="review-delete-btn"
+        (click)="deleteReview()"
+        [disabled]="deletingReview"
+      >
+        {{ deletingReview ? 'Deleting...' : 'Delete Review' }}
+      </button>
+      <button
+        class="comments-btn"
+        (click)="toggleComments()"
+      >
+        💬 {{ review.commentCount }} {{ review.commentCount === 1 ? 'Comment' : 'Comments' }}
+      </button>
+    </div>
   </div>
 
   <div *ngIf="showComments" class="comments-section">

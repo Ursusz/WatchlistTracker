@@ -8,6 +8,7 @@ import { CreateReviewComponent } from './pages/create-review/create-review.compo
 import { WatchlistComponent } from './pages/watchlist/watchlist.component';
 import { MyReviewsComponent } from './pages/my-reviews/my-reviews.component';
 import { MoviesComponent } from './pages/movies/movies.component';
+import { MovieReviewsComponent } from './pages/movie-reviews/movie-reviews.component';
 import { AuthGuard } from './guards/auth.guard';
 import { GuestGuard } from './guards/guest.guard';
 
@@ -22,5 +23,6 @@ export const routes: Routes = [
   { path: 'watchlist', component: WatchlistComponent, canActivate: [AuthGuard] },
   { path: 'my-reviews', component: MyReviewsComponent, canActivate: [AuthGuard] },
   { path: 'movies', component: MoviesComponent, canActivate: [AuthGuard] },
+  { path: 'movies/:movieId/reviews', component: MovieReviewsComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '/feed' }
 ];

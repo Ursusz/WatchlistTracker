@@ -17,14 +17,10 @@
 
     <div *ngIf="!loading && reviews.length > 0" class="reviews-list">
       <div *ngFor="let review of reviews" class="review-wrapper">
-        <app-review-card [review]="review"></app-review-card>
-        <button
-          *ngIf="isOwnReview(review)"
-          class="delete-review-btn"
-          (click)="deleteReview(review.id)"
-        >
-          Delete Review
-        </button>
+        <app-review-card
+          [review]="review"
+          (reviewDeleted)="onReviewDeleted($event)"
+        ></app-review-card>
       </div>
     </div>
   </div>

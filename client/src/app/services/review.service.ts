@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 
 export interface Review {
   id: number;
+  authorId: string;
   authorName: string;
   movieTitle: string;
   rating: number;
@@ -48,6 +49,10 @@ export class ReviewService {
 
   getReviewsByUser(userId: string): Observable<Review[]> {
     return this.http.get<Review[]>(`${this.apiUrl}/user/${userId}`);
+  }
+
+  getReviewsByMovie(movieId: number): Observable<Review[]> {
+    return this.http.get<Review[]>(`${this.apiUrl}/movie/${movieId}`);
   }
 
   updateReview(id: number, review: UpdateReviewRequest): Observable<void> {

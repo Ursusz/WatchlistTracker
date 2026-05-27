@@ -53,7 +53,7 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = errorMessage });
         }
 
-        var token = GenerateJwtToken(user);
+        var token = await GenerateJwtToken(user);
 
         return Ok(new
         {
@@ -73,7 +73,7 @@ public class AuthController : ControllerBase
         if (!await _userManager.CheckPasswordAsync(user, dto.Password))
             return BadRequest(new { message = "Invalid email or password" });
 
-        var token = GenerateJwtToken(user);
+        var token = await GenerateJwtToken(user);
 
         return Ok(new
         {
@@ -83,14 +83,20 @@ public class AuthController : ControllerBase
         });
     }
 
-    private string GenerateJwtToken(ApplicationUser user)
+    private async Task<string> GenerateJwtToken(ApplicationUser user)
     {
-        var claims = new[]
+        var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
             new Claim(ClaimTypes.Name, user.FullName)
         };
+
+        var roles = await _userManager.GetRolesAsync(user);
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
 
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));

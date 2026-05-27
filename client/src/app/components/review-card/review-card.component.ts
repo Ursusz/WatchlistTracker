@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Review } from '../../services/review.service';
+import { Router } from '@angular/router';
+import { Review, ReviewService } from '../../services/review.service';
 import { Comment, CommentService } from '../../services/comment.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -14,16 +15,20 @@ import { AuthService } from '../../services/auth.service';
 })
 export class ReviewCardComponent implements OnInit {
   @Input() review!: Review;
+  @Output() reviewDeleted = new EventEmitter<number>();
 
   comments: Comment[] = [];
   showComments = false;
   newComment = '';
   loadingComments = false;
   submittingComment = false;
+  deletingReview = false;
 
   constructor(
     private commentService: CommentService,
-    private authService: AuthService
+    private reviewService: ReviewService,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -37,10 +42,15 @@ export class ReviewCardComponent implements OnInit {
   }
 
   loadComments() {
+    if (!this.review?.id) {
+      return;
+    }
+
     this.loadingComments = true;
     this.commentService.getCommentsByReview(this.review.id).subscribe({
       next: (comments) => {
         this.comments = comments;
+        this.review.commentCount = comments.length;
         this.loadingComments = false;
       },
       error: (err) => {
@@ -85,10 +95,36 @@ export class ReviewCardComponent implements OnInit {
 
   canDeleteComment(comment: Comment): boolean {
     const userId = this.authService.getUserId();
-    return userId === comment.authorId;
+    return userId === comment.authorId || this.authService.isAdmin();
+  }
+
+  canDeleteReview(): boolean {
+    const userId = this.authService.getUserId();
+    return userId === this.review.authorId || this.authService.isAdmin();
+  }
+
+  deleteReview(): void {
+    if (!this.canDeleteReview() || this.deletingReview) return;
+    if (!confirm('Delete this review?')) return;
+
+    this.deletingReview = true;
+    this.reviewService.deleteReview(this.review.id).subscribe({
+      next: () => {
+        this.deletingReview = false;
+        this.reviewDeleted.emit(this.review.id);
+      },
+      error: (err) => {
+        console.error('Error deleting review:', err);
+        this.deletingReview = false;
+      }
+    });
   }
 
   getRating(rating: number): string {
     return '⭐'.repeat(rating);
+  }
+
+  goToAuthorProfile() {
+    this.router.navigate(['/profile', this.review.authorId]);
   }
 }

@@ -75,6 +75,11 @@
   background-color: #f8f9fa;
 }
 
+.upload-area.drag-over {
+  border-color: #0056b3;
+  background-color: #e9f3ff;
+}
+
 .upload-area input {
   display: none;
 }

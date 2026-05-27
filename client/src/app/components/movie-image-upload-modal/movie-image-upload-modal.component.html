@@ -6,14 +6,22 @@
     </div>
 
     <div class="modal-body">
-      <div class="upload-area">
+      <div
+        class="upload-area"
+        [class.drag-over]="isDragOver"
+        (click)="openFilePicker(fileInput)"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)"
+      >
         <input 
           type="file" 
+          id="movie-image-file-input"
           #fileInput 
           (change)="onFileSelected($event)" 
           accept="image/*"
           [disabled]="loading">
-        <label>Click to select image or drag & drop</label>
+        <label for="movie-image-file-input">Click to select image or drag & drop</label>
       </div>
 
       <div *ngIf="preview" class="preview-section">

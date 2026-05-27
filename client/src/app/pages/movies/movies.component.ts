@@ -7,6 +7,7 @@ import { MovieUploadComponent } from '../../components/movie-upload/movie-upload
 import { MovieImageUploadModalComponent } from '../../components/movie-image-upload-modal/movie-image-upload-modal.component';
 import { Movie, MovieService } from '../../services/movie.service';
 import { WatchlistService } from '../../services/watchlist.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-movies',
@@ -23,14 +24,17 @@ export class MoviesComponent implements OnInit {
   searchTerm = '';
   uploadModalOpen = false;
   selectedMovieForUpload: Movie | null = null;
+  isAdmin = false;
 
   constructor(
     private movieService: MovieService,
     private watchlistService: WatchlistService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
   ngOnInit() {
+    this.isAdmin = this.authService.isAdmin();
     this.loadData();
   }
 
@@ -92,7 +96,12 @@ export class MoviesComponent implements OnInit {
     this.router.navigate(['/create-review'], { queryParams: { movieId } });
   }
 
+  viewMovieReviews(movieId: number) {
+    this.router.navigate(['/movies', movieId, 'reviews']);
+  }
+
   openUploadModal(movie: Movie) {
+    if (!this.isAdmin) return;
     this.selectedMovieForUpload = movie;
     this.uploadModalOpen = true;
   }
@@ -102,7 +111,9 @@ export class MoviesComponent implements OnInit {
     this.selectedMovieForUpload = null;
   }
 
-  onImageUploaded(imageUrl: string) {
+  onImageUploaded(imageUrl: string | null) {
+    if (!imageUrl) return;
+
     if (this.selectedMovieForUpload) {
       this.selectedMovieForUpload.imagePath = imageUrl;
     }

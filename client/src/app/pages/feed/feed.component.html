@@ -33,6 +33,7 @@
       <app-review-card
         *ngFor="let review of reviews"
         [review]="review"
+        (reviewDeleted)="onReviewDeleted($event)"
       ></app-review-card>
     </div>
   </div>

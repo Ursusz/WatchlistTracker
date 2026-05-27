@@ -99,12 +99,13 @@ public class ReviewsController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            await _reviewService.DeleteReviewAsync(id, userId);
+            var isAdmin = User.IsInRole("Admin");
+            await _reviewService.DeleteReviewAsync(id, userId, isAdmin);
             return NoContent();
         }
         catch (UnauthorizedAccessException)
         {
-            return Forbid("You can only delete your own reviews");
+            return Forbid("You can only delete your own reviews unless you are an admin");
         }
         catch (InvalidOperationException ex)
         {

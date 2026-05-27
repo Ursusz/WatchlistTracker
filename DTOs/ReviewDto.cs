@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 public record ReviewDto(
     int Id,
+    string AuthorId,
     string AuthorName,
     string MovieTitle,
     int Rating,

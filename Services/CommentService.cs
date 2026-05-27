@@ -9,7 +9,7 @@ public interface ICommentService
 {
     Task<IEnumerable<CommentDto>> GetCommentsByReviewAsync(int reviewId);
     Task<int> CreateCommentAsync(CreateCommentDto dto, string userId);
-    Task DeleteCommentAsync(int id, string userId);
+    Task DeleteCommentAsync(int id, string userId, bool isAdmin);
 }
 
 public class CommentService : ICommentService
@@ -46,11 +46,12 @@ public class CommentService : ICommentService
         return comment.Id;
     }
 
-    public async Task DeleteCommentAsync(int id, string userId)
+    public async Task DeleteCommentAsync(int id, string userId, bool isAdmin)
     {
         var comment = await _commentRepository.GetByIdAsync(id);
         if (comment == null) throw new InvalidOperationException("Comment not found");
-        if (comment.UserId != userId) throw new UnauthorizedAccessException("You can only delete your own comments");
+        if (!isAdmin && comment.UserId != userId)
+            throw new UnauthorizedAccessException("You can only delete your own comments");
 
         _commentRepository.Remove(comment);
         await _commentRepository.SaveChangesAsync();
