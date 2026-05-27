@@ -30,7 +30,7 @@ export class CreateReviewComponent implements OnInit {
   ) {
     this.form = this.formBuilder.group({
       movieId: ['', Validators.required],
-      rating: [5, [Validators.required, Validators.min(1), Validators.max(10)]],
+      rating: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
       content: ['', [Validators.required, Validators.minLength(10)]],
       visibility: [0, Validators.required]
     });
